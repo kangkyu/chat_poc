@@ -3,11 +3,11 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern
 
   def require_signin
-    redirect_to new_session_url unless current_user_id.present?
+    redirect_to new_session_url unless user_signed_in?
   end
 
   def require_logout
-    redirect_to root_url if current_user_id.present?
+    redirect_to root_url if user_signed_in?
   end
 
   def current_user
@@ -17,4 +17,9 @@ class ApplicationController < ActionController::Base
   def current_user_id
     session[:user_id]
   end
+
+  def user_signed_in?
+    current_user_id.present?
+  end
+  helper_method :user_signed_in?
 end
