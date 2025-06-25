@@ -1,0 +1,23 @@
+<div class="max-w-md mx-auto">
+  <h2 class="text-center mb-8 text-3xl font-bold text-gray-800">Log In</h2>
+  <div class="bg-white rounded-lg shadow-xl p-8">
+    <div class="w-full">
+      <%= form_with url: session_path, id: "session" do |f| %>
+        <div class="mb-6">
+          <%= f.text_field :username,
+              placeholder: "username",
+              class: 'w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-gray-700 bg-gray-50 focus:outline-none focus:bg-white focus:border-blue-500 transition duration-200 ease-in-out' %>
+        </div>
+        <div class="mb-6">
+          <%= f.password_field :password,
+              placeholder: "password",
+              class: 'w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-gray-700 bg-gray-50 focus:outline-none focus:bg-white focus:border-blue-500 transition duration-200 ease-in-out' %>
+        </div>
+        <div class="text-right">
+          <%= f.submit 'Log In',
+              class: 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-200 ease-in-out' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
