@@ -6,32 +6,42 @@ class ChatController < ApplicationController
   end
 
   def create
-    message = current_user.chat_messages.create!(
-      content: params[:message], 
+    @message = current_user.chat_messages.build(
+      content: params[:message],
       role: 'user'
     )
-    
-    # Call your Lambda function
-    response = call_ai_service(params[:message])
-    
-    ai_message = current_user.chat_messages.create!(
-      content: response, 
+
+    @message.file.attach(params[:file]) if params[:file].present?
+    @message.save!
+
+    # Get AI response
+    file_key = @message.file.attached? ? @message.file.key : nil
+    response = call_ai_service({
+      message: params[:message],
+      file_key: file_key
+    })
+
+    @ai_message = current_user.chat_messages.create!(
+      content: response,
       role: 'assistant'
     )
-    
-    render json: { message: ai_message }
+
+    @messages = current_user.chat_messages.order(:created_at)
+
+    respond_to do |format|
+      format.turbo_stream
+    end
   end
 
   private
 
-  def call_ai_service(message)
-    # HTTP call to your API Gateway endpoint
-    uri = URI(ENV['AI_LAMBDA_ENDPOINT'])
-    response = Net::HTTP.post(uri, { message: message }.to_json, {
-      'Content-Type' => 'application/json',
-      'x-api-key' => ENV['AI_API_KEY']
+  def call_ai_service(payload)
+    # HTTP call to AWS Lambda endpoint
+    uri = URI(Rails.application.credentials.ai[:lambda_endpoint])
+    response = Net::HTTP.post(uri, payload.to_json, {
+      'Content-Type' => 'application/json'
     })
-    
+
     JSON.parse(response.body)['response']
   end
 end
